@@ -1,15 +1,17 @@
 <?php
-  define(ROOT_PATH, __DIR__);
+  define('ROOT_PATH', __DIR__);
+  set_time_limit(0);
+  
+  spl_autoload_register(function ($className) {
+    if (strpos($className, 'Channel'))
+      include ROOT_PATH . DIRECTORY_SEPARATOR . 'channels' . DIRECTORY_SEPARATOR . $className . '.php';
+  });
 
-  function __autoload($className) {
-      if (strpos($className, 'Channel'))
-        include ROOT_PATH . DIRECTORY_SEPARATOR . 'channels' . DIRECTORY_SEPARATOR . $className . '.php';
-  }
-
-  function getParam($param) {
+  function getParam($param, $required = true) {
     $params = getopt(null,array($param . ":"));
-    if(!array_key_exists($param, $params)) throw new Exception('Falta el parámetro ' + $param + '.');
-    return $params[$param];
+    if($required && !array_key_exists($param, $params)) throw new Exception('Falta el parámetro ' + $param + '.');
+    if(!isset($params[$param])) return null;
+    else return $params[$param];
   }
 
   switch(getParam('inbound-channel')) {
@@ -18,7 +20,8 @@
         getParam('inbound-user'),
         getParam('inbound-password'),
         getParam('inbound-host'),
-        getParam('inbound-path')
+        getParam('inbound-path'),
+        getParam('inbound-prefix', false)
       );
       break;
     case 'mysql-query':
@@ -34,6 +37,7 @@
       $outboundChannel = new OutboundChannelS3(
         getParam('outbound-key'),
         getParam('outbound-secret'),
+        getParam('outbound-region'),
         getParam('outbound-bucket'),
         getParam('outbound-path')
       );
