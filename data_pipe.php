@@ -1,6 +1,6 @@
 <?php
   define('ROOT_PATH', __DIR__);
-  set_time_limit(0);
+  set_time_limit(6);
 
   spl_autoload_register(function ($className) {
     if (strpos($className, 'Channel'))
