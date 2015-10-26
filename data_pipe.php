@@ -1,7 +1,7 @@
 <?php
   define('ROOT_PATH', __DIR__);
   set_time_limit(0);
-  
+
   spl_autoload_register(function ($className) {
     if (strpos($className, 'Channel'))
       include ROOT_PATH . DIRECTORY_SEPARATOR . 'channels' . DIRECTORY_SEPARATOR . $className . '.php';
@@ -47,6 +47,5 @@
       break;
   }
 
-  foreach($inboundChannel->getFiles() as $file)
-    $outboundChannel->putFile($file);
+  $outboundChannel->putTransfer($inboundChannel->getTransfer($inboundChannel->getProposalLocalPath() . $outboundChannel->getProposalLocalPath()));
 ?>
