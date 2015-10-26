@@ -8,10 +8,13 @@ class OutboundChannelS3
 {
   private $s3;
 
+  private $key;
+  private $region;
   private $bucket;
   private $path;
 
   private $waitLoop = 5;
+  private $log = true;
 
   public function __construct($key, $secret, $region, $bucket, $path)
   {
@@ -24,26 +27,40 @@ class OutboundChannelS3
       'region' => $region
     ));
 
+    $this->key = $key;
+    $this->region = $region;
     $this->bucket = $bucket;
     $this->path = rtrim($path, '/') . '/';
   }
 
-  public function putFile($file, $s3StorageClass = 'STANDARD', $s3ACL = 'private')
+  public function getProposalLocalPath()
   {
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    return '.' . $this->key . $this->region . $this->bucket . str_replace('\\', '_', str_replace('/', '-', $this->path));
+  }
 
-    sleep($this->waitLoop);
-    
-    $result = $this->s3->putObject(array(
-      'Bucket'       => $this->bucket,
-      'Key'          => $this->path . basename($file),
-      'SourceFile'   => $file,
-      'ContentType'  => finfo_file($finfo, $file),
-      'StorageClass' => $s3StorageClass,
-      'ACL'          => $s3ACL
-    ));
-    finfo_close($finfo);
-    unlink($file); var_dump($result);
+  public function putTransfer($localPathTransfer, $s3StorageClass = 'STANDARD', $s3ACL = 'private')
+  {
+    if($this->log) echo date('Y-m-d H:i:s') . " Canal OutboundChannelS3 iniciado.\n";
+
+    foreach(array_diff(scandir($localPathTransfer), array(".", "..")) as $file) {
+      $file = $localPathTransfer . DIRECTORY_SEPARATOR . $file;
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+      sleep($this->waitLoop);
+
+      $result = $this->s3->putObject(array(
+        'Bucket'       => $this->bucket,
+        'Key'          => $this->path . basename($file),
+        'SourceFile'   => $file,
+        'ContentType'  => finfo_file($finfo, $file),
+        'StorageClass' => $s3StorageClass,
+        'ACL'          => $s3ACL
+      ));
+      finfo_close($finfo);
+      unlink($file);
+      if($this->log) echo date('Y-m-d H:i:s') . " Fichero saliente " .  basename($file) . " transferido.\n";
+    }
+    if($this->log) echo date('Y-m-d H:i:s') . " Canal OutboundChannelS3 finalizado.\n";
   }
 }
 ?>
