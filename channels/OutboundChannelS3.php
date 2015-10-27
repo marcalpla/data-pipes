@@ -30,17 +30,17 @@ class OutboundChannelS3
     $this->key = $key;
     $this->region = $region;
     $this->bucket = $bucket;
-    $this->path = rtrim($path, '/') . '/';
+    $this->path = rtrim($path, '/');
   }
 
   public function getProposalLocalPath()
   {
-    return '.' . $this->key . $this->region . $this->bucket . str_replace('\\', '_', str_replace('/', '-', $this->path));
+    return '.' . $this->key . $this->region . $this->bucket . str_replace("/", '-', $this->path);;
   }
 
   public function putTransfer($localPathTransfer, $s3StorageClass = 'STANDARD', $s3ACL = 'private')
   {
-    if($this->log) echo date('Y-m-d H:i:s') . " Canal OutboundChannelS3 iniciado.\n";
+    if($this->log) echo date('Y-m-d H:i:s') . " Canal " . get_class($this) . " iniciado.\n";
 
     foreach(array_diff(scandir($localPathTransfer), array(".", "..")) as $file) {
       $file = $localPathTransfer . DIRECTORY_SEPARATOR . $file;
@@ -50,7 +50,7 @@ class OutboundChannelS3
 
       $result = $this->s3->putObject(array(
         'Bucket'       => $this->bucket,
-        'Key'          => $this->path . basename($file),
+        'Key'          => $this->path . "/" . basename($file),
         'SourceFile'   => $file,
         'ContentType'  => finfo_file($finfo, $file),
         'StorageClass' => $s3StorageClass,
@@ -60,7 +60,7 @@ class OutboundChannelS3
       unlink($file);
       if($this->log) echo date('Y-m-d H:i:s') . " Fichero saliente " .  basename($file) . " transferido.\n";
     }
-    if($this->log) echo date('Y-m-d H:i:s') . " Canal OutboundChannelS3 finalizado.\n";
+    if($this->log) echo date('Y-m-d H:i:s') . " Canal " . get_class($this) . " finalizado.\n";
   }
 }
 ?>

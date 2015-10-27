@@ -16,7 +16,16 @@
 
   switch(getParam('inbound-channel')) {
     case 'ftp':
-      $inboundChannel = new InboundChannelFtp(
+      $inboundChannel = new InboundChannelFTP(
+        getParam('inbound-user'),
+        getParam('inbound-password'),
+        getParam('inbound-host'),
+        getParam('inbound-path'),
+        getParam('inbound-prefix', false)
+      );
+      break;
+    case 'sftp':
+      $inboundChannel = new InboundChannelSFTP(
         getParam('inbound-user'),
         getParam('inbound-password'),
         getParam('inbound-host'),
