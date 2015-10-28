@@ -102,7 +102,7 @@ class InboundChannelSFTP
         if($this->file_get_contents_chunked("ssh2.sftp://". $sftpStream . $this->path . DIRECTORY_SEPARATOR . $remoteFile, $localFileTmp, 4096, function($localFile, $chunk, $i) {
             file_put_contents($localFile, $chunk, ($i == 0 ? LOCK_EX : (FILE_APPEND | LOCK_EX)));
         })) {
-          rename($localFileTmp, $localFile);
+          if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' + $localFile);
           file_put_contents($this->localFileTracker, $remoteFile . ';', FILE_APPEND | LOCK_EX);
           if($this->log) echo date('Y-m-d H:i:s') . " Fichero entrante " . $remoteFile . " transferido.\n";
         }
