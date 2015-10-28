@@ -34,7 +34,14 @@
       );
       break;
     case 'mysql-query':
-      $inboundChannel = new InboundChannelMysqlQuery();
+      $inboundChannel = new InboundChannelMySQLQuery(
+        getParam('inbound-user'),
+        getParam('inbound-password'),
+        getParam('inbound-host'),
+        getParam('inbound-database'),
+        getParam('inbound-query'),
+        getParam('inbound-filename')
+      );
       break;
     default:
       throw new Exception('inbound_channel desconocido.');
