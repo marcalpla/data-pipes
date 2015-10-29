@@ -80,19 +80,19 @@ class InboundChannelSFTP
     if($this->log) echo date('Y-m-d H:i:s') . " Canal " . get_class($this) . " iniciado.\n";
 
     if(!file_exists($this->localPath)) {
-      if(!mkdir($this->localPath, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar ' + $this->localPath);
+      if(!mkdir($this->localPath, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar ' . $this->localPath);
     }
     if(!file_exists($this->localPathTransfer)) {
-      if(!mkdir($this->localPathTransfer, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar para transferencias ' + $this->localPathTransfer);
+      if(!mkdir($this->localPathTransfer, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar para transferencias ' . $this->localPathTransfer);
     }
     if(!file_exists($this->localFileTracker)) {
-      if(!touch($this->localFileTracker)) throw new Exception('No se ha podido crear el fichero local auxiliar ' + $this->localFileTracker);
+      if(!touch($this->localFileTracker)) throw new Exception('No se ha podido crear el fichero local auxiliar ' . $this->localFileTracker);
     }
 
-    if(!($sshStream = ssh2_connect($this->host, 22))) throw new Exception('No se ha podido conectar a ' + $this->host + '.');
+    if(!($sshStream = ssh2_connect($this->host, 22))) throw new Exception('No se ha podido conectar a ' . $this->host . '.');
     if(!ssh2_auth_password($sshStream, $this->user, $this->password)) throw new Exception('No se ha podido hacer login.');
     if(!($sftpStream = ssh2_sftp($sshStream))) throw new Exception('No se ha podido inicializar el subsistema SFTP.');
-    if(!($remoteFiles = scandir('ssh2.sftp://' . $sftpStream . $this->path))) throw new Exception('No se ha podido acceder al directorio remoto ' + $this->path);
+    if(!($remoteFiles = scandir('ssh2.sftp://' . $sftpStream . $this->path))) throw new Exception('No se ha podido acceder al directorio remoto ' . $this->path);
 
     foreach($remoteFiles as $remoteFile) {
       if($this->matchFile($remoteFile) && strpos(file_get_contents($this->localFileTracker),$remoteFile) === false) {
@@ -102,7 +102,7 @@ class InboundChannelSFTP
         if($this->file_get_contents_chunked("ssh2.sftp://". $sftpStream . $this->path . DIRECTORY_SEPARATOR . $remoteFile, $localFileTmp, 4096, function($localFile, $chunk, $i) {
             file_put_contents($localFile, $chunk, ($i == 0 ? LOCK_EX : (FILE_APPEND | LOCK_EX)));
         })) {
-          if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' + $localFile);
+          if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' . $localFile);
           file_put_contents($this->localFileTracker, $remoteFile . ';', FILE_APPEND | LOCK_EX);
           if($this->log) echo date('Y-m-d H:i:s') . " Fichero entrante " . $remoteFile . " transferido.\n";
         }

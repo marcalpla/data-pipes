@@ -9,7 +9,7 @@
 
   function getParam($param, $required = true) {
     $params = getopt(null,array($param . ":"));
-    if($required && !array_key_exists($param, $params)) throw new Exception('Falta el parámetro ' + $param + '.');
+    if($required && !array_key_exists($param, $params)) throw new Exception('Falta el parámetro ' . $param . '.');
     if(!isset($params[$param])) return null;
     else return $params[$param];
   }
