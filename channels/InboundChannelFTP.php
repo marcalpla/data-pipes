@@ -68,6 +68,9 @@ class InboundChannelFTP
 
     if(!($ftpStream = ftp_connect($this->host))) throw new Exception('No se ha podido conectar a ' + $this->host + '.');
     if(!ftp_login($ftpStream, $this->user, $this->password)) throw new Exception('No se ha podido hacer login.');
+
+    ftp_pasv($ftpStream, true);
+    
     if(!ftp_chdir($ftpStream, $this->path)) throw new Exception('No se ha podido acceder al directorio remoto ' + $this->path);
     if(!($remoteFiles = ftp_nlist($ftpStream, '.'))) throw new Exception('No se ha podido listar el contenido del directorio remoto ' + $this->path);
 
