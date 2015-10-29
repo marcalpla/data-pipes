@@ -57,22 +57,22 @@ class InboundChannelFTP
     if($this->log) echo date('Y-m-d H:i:s') . " Canal " . get_class($this) . " iniciado.\n";
 
     if(!file_exists($this->localPath)) {
-      if(!mkdir($this->localPath, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar ' + $this->localPath);
+      if(!mkdir($this->localPath, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar ' . $this->localPath);
     }
     if(!file_exists($this->localPathTransfer)) {
-      if(!mkdir($this->localPathTransfer, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar para transferencias ' + $this->localPathTransfer);
+      if(!mkdir($this->localPathTransfer, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar para transferencias ' . $this->localPathTransfer);
     }
     if(!file_exists($this->localFileTracker)) {
-      if(!touch($this->localFileTracker)) throw new Exception('No se ha podido crear el fichero local auxiliar ' + $this->localFileTracker);
+      if(!touch($this->localFileTracker)) throw new Exception('No se ha podido crear el fichero local auxiliar ' . $this->localFileTracker);
     }
 
-    if(!($ftpStream = ftp_connect($this->host))) throw new Exception('No se ha podido conectar a ' + $this->host + '.');
+    if(!($ftpStream = ftp_connect($this->host))) throw new Exception('No se ha podido conectar a ' . $this->host . '.');
     if(!ftp_login($ftpStream, $this->user, $this->password)) throw new Exception('No se ha podido hacer login.');
 
     ftp_pasv($ftpStream, true);
-    
-    if(!ftp_chdir($ftpStream, $this->path)) throw new Exception('No se ha podido acceder al directorio remoto ' + $this->path);
-    if(!($remoteFiles = ftp_nlist($ftpStream, '.'))) throw new Exception('No se ha podido listar el contenido del directorio remoto ' + $this->path);
+
+    if(!ftp_chdir($ftpStream, $this->path)) throw new Exception('No se ha podido acceder al directorio remoto ' . $this->path);
+    if(!($remoteFiles = ftp_nlist($ftpStream, '.'))) throw new Exception('No se ha podido listar el contenido del directorio remoto ' . $this->path);
 
     foreach($remoteFiles as $remoteFile) {
       if($this->matchFile($remoteFile) && strpos(file_get_contents($this->localFileTracker),$remoteFile) === false) {
