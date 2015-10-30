@@ -44,7 +44,7 @@
       );
       break;
     default:
-      throw new Exception('inbound_channel desconocido.');
+      throw new Exception('inbound-channel desconocido.');
       break;
   }
 
@@ -59,7 +59,7 @@
       );
       break;
     default:
-      throw new Exception('outbound desconocido.');
+      throw new Exception('outbound-channel desconocido.');
       break;
   }
 
