@@ -31,7 +31,7 @@ class InboundChannelMySQLQuery
 
   public function getProposalLocalPath()
   {
-    return '.' . $this->user . $this->host . $this->database . md5($this->query);
+    return '.' . $this->user . $this->host . $this->database;
   }
 
   public function getTransfer($localPath)
