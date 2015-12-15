@@ -58,6 +58,14 @@
         getParam('outbound-path')
       );
       break;
+    case 'ftp':
+      $outboundChannel = new OutboundChannelFTP(
+        getParam('outbound-user'),
+        getParam('outbound-password'),
+        getParam('outbound-host'),
+        getParam('outbound-path')
+      );
+      break;
     default:
       throw new Exception('outbound-channel desconocido.');
       break;
