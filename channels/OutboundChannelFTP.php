@@ -39,7 +39,7 @@ class OutboundChannelFTP
 
       sleep($this->waitLoop);
 
-      if(!ftp_put($ftpStream, $fileRemote, $file, FTP_BINARY)) throw new Exception('No se ha podido transferir el fichero hacia ' . $fileRemote);
+      if(!ftp_put($ftpStream, $fileRemote, $fileLocal, FTP_BINARY)) throw new Exception('No se ha podido transferir el fichero hacia ' . $fileRemote);
       unlink($fileLocal);
       if($this->log) echo date('Y-m-d H:i:s') . " Fichero saliente " .  basename($fileLocal) . " transferido.\n";
     }
