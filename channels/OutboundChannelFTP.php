@@ -31,7 +31,7 @@ class OutboundChannelFTP
 
     ftp_pasv($ftpStream, true);
 
-    if(!ftp_chdir($ftpStream, $this->path)) throw new Exception('No se ha podido acceder al directorio remoto ' . $this->path);
+    if(!empty($this->path) && !ftp_chdir($ftpStream, $this->path)) throw new Exception('No se ha podido acceder al directorio remoto ' . $this->path);
 
     foreach(array_diff(scandir($localPathTransfer), array(".", "..")) as $file) {
       $fileRemote = $this->path . "/" . $file;
