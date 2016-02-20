@@ -1,6 +1,6 @@
 # data-pipes
 
-**Light PHP application** to move data between different types of system through independent processes for each data pipe. A data pipe is **composed of an inbound channel and an outbound channel** and it's executed directly from a shell. You can use tools as for example cron to setup a periodically data pipe execution.
+**Light PHP application** to move data between different types of system through independent processes for each data pipe. A data pipe is **composed of an inbound channel and an outbound channel** and it's executed directly from the shell. You can use tools as for example cron to setup a periodically data pipe execution.
 
 ## Execution example
 
