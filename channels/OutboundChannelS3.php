@@ -62,9 +62,9 @@ class OutboundChannelS3
         ));
       } else {
         $uploader = new MultipartUploader($this->s3, $file, array(
+          'bucket' => $this->bucket,
+          'key' => $this->path . "/" . basename($file),
           'before_initiate' => function (\Aws\Command $command) {
-            $command['Bucket']       = $this->bucket;
-            $command['Key']          = $this->path . "/" . basename($file);
             $command['ContentType']  = finfo_file($finfo, $file);
             $command['StorageClass'] = $s3StorageClass;
             $command['ACL']          = $s3ACL;
