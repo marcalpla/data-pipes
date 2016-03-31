@@ -51,7 +51,7 @@ class OutboundChannelS3
 
       sleep($this->waitLoop);
 
-      if($filesize < 1024 * 1024 * 5 || $filesize < 1024 * 1024 * $maxFileSizeForSingleUploadinMB) {
+      if($filesize < 1024 * 1024 * 5 || $filesize < 1024 * 1024 * $this->maxFileSizeForSingleUploadinMB) {
         $result = $this->s3->putObject(array(
           'Bucket'       => $this->bucket,
           'Key'          => $this->path . "/" . basename($file),
