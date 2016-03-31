@@ -2,7 +2,8 @@
 require ROOT_PATH . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'aws' . DIRECTORY_SEPARATOR . 'aws-autoloader.php';
 
 use Aws\S3\S3Client;
-use Aws\S3\Exception\S3Exception;
+use Aws\S3\MultipartUploader;
+use Aws\Exception\MultipartUploadException;
 
 class OutboundChannelS3
 {
@@ -15,6 +16,7 @@ class OutboundChannelS3
 
   private $waitLoop = 5;
   private $log = true;
+  private $maxFileSizeForSingleUploadinMB = 100
 
   public function __construct($key, $secret, $region, $bucket, $path)
   {
@@ -45,17 +47,40 @@ class OutboundChannelS3
     foreach(array_diff(scandir($localPathTransfer), array(".", "..")) as $file) {
       $file = $localPathTransfer . DIRECTORY_SEPARATOR . $file;
       $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $filesize = filesize($file);
 
       sleep($this->waitLoop);
 
-      $result = $this->s3->putObject(array(
-        'Bucket'       => $this->bucket,
-        'Key'          => $this->path . "/" . basename($file),
-        'SourceFile'   => $file,
-        'ContentType'  => finfo_file($finfo, $file),
-        'StorageClass' => $s3StorageClass,
-        'ACL'          => $s3ACL
-      ));
+      if($filesize < 1024 * 1024 * 5 || $filesize < 1024 * 1024 * $maxFileSizeForSingleUploadinMB) {
+        $result = $this->s3->putObject(array(
+          'Bucket'       => $this->bucket,
+          'Key'          => $this->path . "/" . basename($file),
+          'SourceFile'   => $file,
+          'ContentType'  => finfo_file($finfo, $file),
+          'StorageClass' => $s3StorageClass,
+          'ACL'          => $s3ACL
+        ));
+      } else {
+        $uploader = new MultipartUploader($this->s3, $file, array(
+          'before_initiate' => function (\Aws\Command $command) {
+            $command['Bucket']       = $this->bucket,
+            $command['Key']          = $this->path . "/" . basename($file),
+            $command['ContentType']  = finfo_file($finfo, $file),
+            $command['StorageClass'] = $s3StorageClass,
+            $command['ACL']          = $s3ACL
+          }
+        ));
+        do {
+          try {
+            $result = $uploader->upload();
+          } catch (MultipartUploadException $e) {
+            $uploader = new MultipartUploader($this->s3, $file, array(
+              'state' => $e->getState(),
+            ));
+          }
+        } while(!isset($result));
+      }
+
       finfo_close($finfo);
       unlink($file);
       if($this->log) echo date('Y-m-d H:i:s') . " Fichero saliente " .  basename($file) . " transferido.\n";
