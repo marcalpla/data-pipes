@@ -16,7 +16,7 @@ class OutboundChannelS3
 
   private $waitLoop = 5;
   private $log = true;
-  private $maxFileSizeForSingleUploadinMB = 100
+  private $maxFileSizeForSingleUploadinMB = 100;
 
   public function __construct($key, $secret, $region, $bucket, $path)
   {
