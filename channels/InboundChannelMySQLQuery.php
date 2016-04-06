@@ -55,9 +55,11 @@ class InboundChannelMySQLQuery
       $localFileTmp = $this->localPath . DIRECTORY_SEPARATOR . "tmp-" . $this->filename;
       $localFile = $this->localPathTransfer . DIRECTORY_SEPARATOR . $this->filename;
       if(!($localFileTmpP = fopen($localFileTmp, 'w'))) throw new Exception('No se ha podido crear el fichero temporal ' . $localFileTmp);
+      $queryResultFieldsName = array();
+      while($queryResultField = $queryResult->fetch_field()) $queryResultFieldsName[] = $queryResultField->name;
       $i = 0;
-      while($queryResultRow = $queryResult->fetch_assoc()) {
-        if(!fputcsv($localFileTmpP, ($i == 0 ? array_keys($queryResultRow) : array_values($queryResultRow)), ";")) throw new Exception('Error escribiendo en el fichero temporal ' . $localFileTmp);
+      while($queryResultRow = $queryResult->fetch_row()) {
+        if(!fputcsv($localFileTmpP, ($i == 0 ? $queryResultFieldsName : $queryResultRow), ";")) throw new Exception('Error escribiendo en el fichero temporal ' . $localFileTmp);
         $i++;
       }
       fclose($localFileTmpP);
