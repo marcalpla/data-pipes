@@ -58,10 +58,10 @@ class InboundChannelMySQLQuery
       $queryResultFieldsName = array();
       while($queryResultField = $queryResult->fetch_field()) $queryResultFieldsName[] = $queryResultField->name;
       $i = 0;
-      while($queryResultRow = $queryResult->fetch_row()) {
+      do {
         if(!fputcsv($localFileTmpP, ($i == 0 ? $queryResultFieldsName : $queryResultRow), ";")) throw new Exception('Error escribiendo en el fichero temporal ' . $localFileTmp);
         $i++;
-      }
+      } while($queryResultRow = $queryResult->fetch_row());
       fclose($localFileTmpP);
       if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' . $localFile);
       if($this->log) echo date('Y-m-d H:i:s') . " Query volcada al fichero " . $this->filename . "\n";
