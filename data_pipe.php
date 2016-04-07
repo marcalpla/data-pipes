@@ -39,6 +39,7 @@
         getParam('inbound-password'),
         getParam('inbound-host'),
         getParam('inbound-database'),
+        getParam('inbound-charset'),
         getParam('inbound-query'),
         getParam('inbound-filename')
       );

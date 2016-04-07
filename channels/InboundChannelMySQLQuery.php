@@ -13,12 +13,13 @@ class InboundChannelMySQLQuery
   private $waitLoop = 5;
   private $log = true;
 
-  public function __construct($user, $password, $host, $database, $query, $filename)
+  public function __construct($user, $password, $host, $database, $charset, $query, $filename)
   {
     $this->user = $user;
     $this->password = $password;
     $this->host = $host;
     $this->database = $database;
+    $this->charset = $charset;
     $this->query = $query;
     $this->filename = $filename;
   }
@@ -49,19 +50,20 @@ class InboundChannelMySQLQuery
 
     $mysqli = new mysqli($this->host, $this->user, $this->password, $this->database);
     if ($mysqli->connect_errno) throw new Exception('No se ha podido conectar: ' . $mysqli->connect_error);
+    $mysqli->set_charset($this->charset);
 
     $queryResult = $mysqli->query($this->query, MYSQLI_USE_RESULT);
     if($queryResult) {
       $localFileTmp = $this->localPath . DIRECTORY_SEPARATOR . "tmp-" . $this->filename;
       $localFile = $this->localPathTransfer . DIRECTORY_SEPARATOR . $this->filename;
-      if(!($localFileTmpP = fopen($localFileTmp, 'w'))) throw new Exception('No se ha podido crear el fichero temporal ' . $localFileTmp);
+      if(!($localFileTmpP = fopen($localFileTmp, 'wb'))) throw new Exception('No se ha podido crear el fichero temporal ' . $localFileTmp);
       $queryResultFieldsName = array();
       while($queryResultField = $queryResult->fetch_field()) $queryResultFieldsName[] = $queryResultField->name;
       $i = 0;
       do {
         if(!fputcsv($localFileTmpP, ($i == 0 ? $queryResultFieldsName : $queryResultRow), ";")) throw new Exception('Error escribiendo en el fichero temporal ' . $localFileTmp);
         $i++;
-      } while($queryResultRow = $queryResult->fetch_row());
+      } while($queryResultRow = str_replace(array("\r","\n","\""), " ", $queryResult->fetch_row()));
       fclose($localFileTmpP);
       if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' . $localFile);
       if($this->log) echo date('Y-m-d H:i:s') . " Query volcada al fichero " . $this->filename . "\n";
