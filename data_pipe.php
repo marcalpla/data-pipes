@@ -44,6 +44,15 @@
         getParam('inbound-filename')
       );
       break;
+    case 's3':
+      $inboundChannel = new InboundChannelS3(
+        getParam('inbound-key'),
+        getParam('inbound-secret'),
+        getParam('inbound-region'),
+        getParam('inbound-bucket'),
+        getParam('inbound-path')
+      );
+      break;
     default:
       throw new Exception('inbound-channel desconocido.');
       break;
@@ -65,6 +74,18 @@
         getParam('outbound-password'),
         getParam('outbound-host'),
         getParam('outbound-path')
+      );
+      break;
+    case 'mysql-loaddata':
+      $outboundChannel = new OutboundChannelMySQLLoadData(
+        getParam('outbound-user'),
+        getParam('outbound-password'),
+        getParam('outbound-host'),
+        getParam('outbound-database'),
+        getParam('outbound-charset'),
+        getParam('outbound-table'),
+        getParam('outbound-truncate'),
+        getParam('outbound-separator')
       );
       break;
     default:
