@@ -5,6 +5,7 @@ class InboundChannelMySQLQuery
   private $password;
   private $host;
   private $database;
+  private $charset;
   private $query;
 
   private $localPath;
