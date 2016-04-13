@@ -6,7 +6,7 @@ use Aws\S3\Exception\S3Exception;
 
 class InboundChannelS3
 {
-  private $s3
+  private $s3;
 
   private $key;
   private $region;
@@ -59,19 +59,31 @@ class InboundChannelS3
       if(!mkdir($this->localPathTransfer, 0700)) throw new Exception('No se ha podido crear el directorio local auxiliar para transferencias ' . $this->localPathTransfer);
     }
 
-    try {
-      $result = $s3->getObject(array(
+    $objects = $this->s3->getIterator('ListObjects', array(
+      'Bucket'  => $this->bucket,
+      'Prefix'  => $this->path
+    ));
+
+    foreach($objects as $object) {
+      $localFileTmp = $this->localPath . DIRECTORY_SEPARATOR . "tmp-" . basename($object['Key']);
+      $localFile = $this->localPathTransfer . DIRECTORY_SEPARATOR . basename($object['Key']);
+
+      if(!($localFileTmpP = fopen($localFileTmp, 'wb'))) throw new Exception('No se ha podido crear el fichero temporal ' . $localFileTmp);
+      $result = $this->s3->getObject(array(
         'Bucket'       => $this->bucket,
-        'Key'          => $this->path,
-        'SaveAs'       => $this->localPathTransfer . DIRECTORY_SEPARATOR . basename($this->path);
+        'Key'          => $object['Key'],
+        'SaveAs'       => $localFileTmpP
       ));
-      if($this->log) echo date('Y-m-d H:i:s') . " Fichero entrante " . basename($this->path) . " transferido.\n";
-    } catch (S3Exception $e) {
-      if($this->log) echo $e->getMessage() . "\n";
+
+      if(filesize($localFileTmp) > 0) {
+        if(!rename($localFileTmp, $localFile)) throw new Exception('Error moviendo el fichero temporal a definitivo: ' . $localFile);
+        if($this->log) echo date('Y-m-d H:i:s') . " Fichero entrante " . basename($object['Key']) . " transferido.\n";
+      } else {
+        unlink($localFileTmp);
+      }
     }
 
     if($this->log) echo date('Y-m-d H:i:s') . " Canal " . get_class($this) . " finalizado.\n";
-
     return $this->localPathTransfer;
   }
 }
