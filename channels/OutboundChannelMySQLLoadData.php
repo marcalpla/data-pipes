@@ -8,12 +8,13 @@ class OutboundChannelMySQLLoadData
   private $charset;
   private $table;
   private $truncate;
+  private $replace;
   private $separator;
   private $enclosure;
 
   private $log = true;
 
-  public function __construct($user, $password, $host, $database, $charset, $table, $truncate, $separator, $enclosure = "\"", $ignoreLines = "0")
+  public function __construct($user, $password, $host, $database, $charset, $table, $truncate, $replace, $separator, $enclosure = "\"", $ignoreLines = "0")
   {
     $this->user = $user;
     $this->password = $password;
@@ -22,6 +23,7 @@ class OutboundChannelMySQLLoadData
     $this->charset = $charset;
     $this->table = $table;
     $this->truncate = $truncate;
+    $this->replace = $replace;
     $this->separator = $separator;
     $this->enclosure = $enclosure;
     $this->ignoreLines = $ignoreLines;
@@ -55,7 +57,7 @@ class OutboundChannelMySQLLoadData
       foreach($files as $file) {
         $fileLocal = $localPathTransfer . DIRECTORY_SEPARATOR . $file;
 
-        $loadData = "LOAD DATA LOCAL INFILE '" . $fileLocal . "' INTO TABLE " . $this->table
+        $loadData = "LOAD DATA LOCAL INFILE '" . $fileLocal . "'" . (!empty($this->replace) ? " REPLACE " : " ") . "INTO TABLE " . $this->table
         . " FIELDS TERMINATED BY '" . $this->separator
         . "' OPTIONALLY ENCLOSED BY '" . $this->enclosure
         . "' IGNORE " . $this->ignoreLines . " LINES";
