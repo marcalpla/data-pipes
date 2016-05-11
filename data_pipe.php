@@ -85,6 +85,7 @@
         getParam('outbound-charset'),
         getParam('outbound-table'),
         getParam('outbound-truncate'),
+        getParam('outbound-replace'),
         getParam('outbound-separator')
       );
       break;
