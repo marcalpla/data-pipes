@@ -10,5 +10,5 @@ You can see in the launcher_example.sh script a **data pipe example** with a FTP
 
 The channel types supported are:
 
-**Inbound:** FTP, SFTP, MySQL Query, Amazon S3.
+**Inbound:** FTP, SFTP, MySQL Query, PostgreSQL Query, Amazon S3.
 **Outbound:** FTP, Amazon S3, MySQL Load Data.

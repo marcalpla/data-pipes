@@ -44,6 +44,19 @@
         getParam('inbound-filename')
       );
       break;
+    case 'postgresql-query':
+      $inboundChannel = new InboundChannelPostgreSQLQuery(
+        getParam('inbound-user'),
+        getParam('inbound-password'),
+        getParam('inbound-host'),
+        getParam('inbound-port'),
+        getParam('inbound-database'),
+        getParam('inbound-charset'),
+        getParam('inbound-query'),
+        getParam('inbound-query-batch-rows'),
+        getParam('inbound-filename')
+      );
+      break;
     case 's3':
       $inboundChannel = new InboundChannelS3(
         getParam('inbound-key'),
@@ -86,7 +99,8 @@
         getParam('outbound-table'),
         getParam('outbound-truncate'),
         getParam('outbound-replace'),
-        getParam('outbound-separator')
+        getParam('outbound-separator'),
+        getParam('outbound-ignore-lines')
       );
       break;
     default:

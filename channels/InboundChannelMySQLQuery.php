@@ -7,11 +7,11 @@ class InboundChannelMySQLQuery
   private $database;
   private $charset;
   private $query;
+  private $filename;
 
   private $localPath;
   private $localPathTransfer;
 
-  private $waitLoop = 5;
   private $log = true;
 
   public function __construct($user, $password, $host, $database, $charset, $query, $filename)

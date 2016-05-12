@@ -10,11 +10,12 @@ class OutboundChannelMySQLLoadData
   private $truncate;
   private $replace;
   private $separator;
+  private $ignoreLines;
   private $enclosure;
 
   private $log = true;
 
-  public function __construct($user, $password, $host, $database, $charset, $table, $truncate, $replace, $separator, $enclosure = "\"", $ignoreLines = "0")
+  public function __construct($user, $password, $host, $database, $charset, $table, $truncate, $replace, $separator, $ignoreLines, $enclosure = "\"")
   {
     $this->user = $user;
     $this->password = $password;
@@ -25,8 +26,8 @@ class OutboundChannelMySQLLoadData
     $this->truncate = $truncate;
     $this->replace = $replace;
     $this->separator = $separator;
-    $this->enclosure = $enclosure;
     $this->ignoreLines = $ignoreLines;
+    $this->enclosure = $enclosure;
   }
 
   public function getProposalLocalPath()
