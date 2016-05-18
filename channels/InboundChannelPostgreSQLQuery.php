@@ -110,7 +110,7 @@ class InboundChannelPostgreSQLQuery
         if(!fputcsv($fileP, ($header && $i == 0 ? $queryResultFieldsName : $queryResultRow), ";")) throw new Exception('Error escribiendo en el fichero temporal ' . $localFileTmp);
       }
       $i++;
-    } while($queryResultRow = str_replace(array("\r","\n","\""), " ", pg_fetch_row($queryResult)));
+    } while($queryResultRow = str_replace(array("\r","\n","\"","'"), " ", pg_fetch_row($queryResult)));
     fclose($fileP);
   }
 }
